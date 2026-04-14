@@ -1,5 +1,6 @@
 (async () => {
-  let scp;
+  let scp = "";
+  let scpTitleHtml = "";
   try {
     const regexMatch = document.URL.matchAll(/scp-[-\w]+/gu);
     scp = [...regexMatch].at(-1)[0];
@@ -7,7 +8,7 @@
 
     const id = Number(scp.split("-")[1]);
     console.log(id);
-    if (isNaN(id)) throw new Error("Couldn't get id for series");
+    if (isNaN(id)) throw new Error("Couldn't get scp-id to determine series");
 
     const series = Math.floor(id / 1000) + 1;
     console.log(series);
@@ -31,12 +32,60 @@
       `li:has(a[href*='${scp}'])`
     ).innerHTML;
     console.log(scpEntry);
-    const scpTitleHtml = scpEntry.match(/(?<=- ).*/u)[0];
+    scpTitleHtml = scpEntry.match(/(?<=- ).*/u)[0];
     console.log(scpTitleHtml);
     // saving this to localStorage for popup.html to show
     await chrome.storage.local.set({ [scp]: scpTitleHtml });
   } catch (error) {
     console.error(error);
     chrome.storage.local.set({ [scp]: null });
+  } finally {
+    // set title alongside the text of first visible entry of scp-id found in main-content (which is hopefully the title)
+    function isVisible(el) {
+      // check if element has dimensions and isn't explicitly hidden
+      return !!(
+        el.offsetWidth ||
+        el.offsetHeight ||
+        el.getClientRects().length
+      );
+    }
+
+    // Using the TreeWalker method (most efficient for this)
+    function findVisibleElementByText(text) {
+      const walker = document.createTreeWalker(
+        document.body,
+        NodeFilter.SHOW_TEXT,
+        null,
+        false
+      );
+
+      let node;
+      while ((node = walker.nextNode())) {
+        if (node.textContent.toLowerCase().includes(text)) {
+          const parent = node.parentElement;
+          // Check if the parent (or the text itself) is actually visible
+          if (parent && isVisible(parent)) {
+            return parent;
+          }
+        }
+      }
+      return null;
+    }
+
+    const firstElement = findVisibleElementByText(scp.toLowerCase());
+    console.log(firstElement);
+    if (scpTitleHtml&&firstElement) {
+      const startIndex = firstElement.innerHTML
+        .toLowerCase()
+        .indexOf(scp.toLowerCase());
+      const endIndex = startIndex + scp.length + 1;
+      const newInnerHTML =
+        firstElement.innerHTML.slice(0, endIndex) +
+        " - " +
+        scpTitleHtml +
+        firstElement.innerHTML.slice((start = endIndex));
+      console.log(newInnerHTML);
+      firstElement.innerHTML = newInnerHTML;
+    }
   }
 })();

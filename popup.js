@@ -1,5 +1,9 @@
 try {
-  const nonScpMsg = "Current page cannot be recognized as SCP item page";
+  const nonScpMsg =
+    "Current page cannot be recognized as an SCP item page. You may refresh the page to check again";
+  const setMsg = (msg) => {
+    document.getElementById("main").innerHTML = msg;
+  };
   const check = async () => {
     const [tab] = await chrome.tabs.query({
       active: true,
@@ -16,14 +20,14 @@ try {
         return;
       }
       if (scpTitle[scp] === null) {
-        document.getElementById("main").innerHTML = nonScpMsg;
+        setMsg(nonScpMsg);
         return;
       }
       console.log(scpTitle);
       const scpTitleHtml = scpTitle[scp];
-      document.getElementById("main").innerHTML = scpTitleHtml;
+      setMsg(scpTitleHtml);
     } else {
-      document.getElementById("main").innerHTML = nonScpMsg;
+      setMsg(nonScpMsg);
     }
   };
   check();
