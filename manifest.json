@@ -1,0 +1,16 @@
+{
+  "name": "SCP title",
+  "description": "Gets the SCP title from the main list to the current page",
+  "version": "1.0",
+  "manifest_version": 3,
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "js": ["content.js"],
+      "matches": ["https://scp-wiki.wikidot.com/scp-*"]
+    }
+  ],
+  "permissions":["tabs","storage"]
+}
