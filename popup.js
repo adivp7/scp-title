@@ -9,11 +9,11 @@ try {
       active: true,
       currentWindow: true,
     });
-    console.log(tab.url);
+    // console.log(tab.url);
     if (tab.url.match("scp-wiki.wikidot.com/scp-")) {
       const regexMatch = tab.url.matchAll(/scp-[-\w]+/gu);
       const [scp] = [...regexMatch].at(-1);
-      console.log(scp);
+      // console.log(scp);
       const scpTitle = await chrome.storage.local.get([scp]);
       if (scpTitle[scp] === undefined) {
         setTimeout(check, 1000);
@@ -23,7 +23,7 @@ try {
         setMsg(nonScpMsg);
         return;
       }
-      console.log(scpTitle);
+      // console.log(scpTitle);
       const scpTitleHtml = scpTitle[scp];
       setMsg(scpTitleHtml);
     } else {
@@ -32,5 +32,5 @@ try {
   };
   check();
 } catch (error) {
-  console.error(error);
+  // console.error(error);
 }

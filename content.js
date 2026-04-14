@@ -4,23 +4,23 @@
   try {
     const regexMatch = document.URL.matchAll(/scp-[-\w]+/gu);
     scp = [...regexMatch].at(-1)[0];
-    console.log(scp);
+    // console.log(scp);
 
     const id = Number(scp.split("-")[1]);
-    console.log(id);
+    // console.log(id);
     if (isNaN(id)) throw new Error("Couldn't get scp-id to determine series");
 
     const series = Math.floor(id / 1000) + 1;
-    console.log(series);
+    // console.log(series);
 
     let page = "scp-series";
     if (series !== 1) page += "-" + series;
-    console.log(page);
+    // console.log(page);
 
     const url = "https://scp-wiki.wikidot.com/" + page;
     const res = await fetch(url);
     if (!res.ok) throw new Error(`Response status: ${res.status}`);
-    console.log(res);
+    // console.log(res);
     const html = await res.text();
     // console.log(html.slice(0, 100));
     // tried to regex instead of using DOMParser because it would be faster but it just freezes for some reason
@@ -31,13 +31,13 @@
     const scpEntry = scpList.querySelector(
       `li:has(a[href*='${scp}'])`
     ).innerHTML;
-    console.log(scpEntry);
+    // console.log(scpEntry);
     scpTitleHtml = scpEntry.match(/(?<=- ).*/u)[0];
-    console.log(scpTitleHtml);
+    // console.log(scpTitleHtml);
     // saving this to localStorage for popup.html to show
     await chrome.storage.local.set({ [scp]: scpTitleHtml });
   } catch (error) {
-    console.error(error);
+    // console.error(error);
     chrome.storage.local.set({ [scp]: null });
   } finally {
     // set title alongside the text of first visible entry of scp-id found in main-content (which is hopefully the title)
@@ -73,7 +73,7 @@
     }
 
     const firstElement = findVisibleElementByText(scp.toLowerCase());
-    console.log(firstElement);
+    // console.log(firstElement);
     if (scpTitleHtml&&firstElement) {
       const startIndex = firstElement.innerHTML
         .toLowerCase()
@@ -84,7 +84,7 @@
         " - " +
         scpTitleHtml +
         firstElement.innerHTML.slice((start = endIndex));
-      console.log(newInnerHTML);
+      // console.log(newInnerHTML);
       firstElement.innerHTML = newInnerHTML;
     }
   }
