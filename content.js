@@ -40,6 +40,8 @@
     // console.error(error);
     chrome.storage.local.set({ [scp]: null });
   } finally {
+    // only do all this if title is actually present
+    if (!scpTitleHtml) return;
     // set title alongside the text of first visible entry of scp-id found in main-content (which is hopefully the title)
     function isVisible(el) {
       // check if element has dimensions and isn't explicitly hidden
@@ -74,7 +76,7 @@
 
     const firstElement = findVisibleElementByText(scp.toLowerCase());
     // console.log(firstElement);
-    if (scpTitleHtml&&firstElement) {
+    if (scpTitleHtml && firstElement) {
       const startIndex = firstElement.innerHTML
         .toLowerCase()
         .indexOf(scp.toLowerCase());
